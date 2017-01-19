@@ -34,19 +34,17 @@ char	*periods(char *str, size_t w)
 int	fillit(char minos[26][17], size_t w, size_t spot, char *result)
 {
 	static size_t	placecount;
-	size_t	num;
+	size_t			num;
 	static size_t	minocount;
 	
-	if (!minocount)
-		minocount = countminos(minos);
+	num = 0;
 	if (!placecount || spot == 0)
 		placecount = 0;
+	if (!minocount)
+		minocount = countminos(minos);
 	if (placecount == minocount)
 		return (1);
-	if (!result[spot])
-		return (0);
-	num = 0;
-	while (num < minocount)
+	while (minos[num][0] == '.' || ft_isalpha(minos[num][0]))
 	{
 		if (uniquemino(minos[num], result))
 		{
@@ -81,7 +79,7 @@ size_t	countminos(char minos[26][17])
 	size_t	i;
 
 	i = 0;
-	while(minos[i][0] != '\0')
+	while(*minos[i])
 		i++;
 	return (i);
 }
@@ -137,7 +135,7 @@ void	deletemino(char *mino, char *result)
 	}
 }
 
-int uniquemino(char *mino, char *result)
+int uniquemino(char mino[], char *result)
 {
 	char	*res;
 	char	*min;
