@@ -1,23 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strnew.c                                        :+:      :+:    :+:   */
+/*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agundry <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/30 16:36:17 by agundry           #+#    #+#             */
-/*   Updated: 2017/02/01 14:31:04 by agundry          ###   ########.fr       */
+/*   Created: 2017/02/01 14:31:35 by agundry           #+#    #+#             */
+/*   Updated: 2017/02/01 14:32:14 by agundry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strnew(size_t size)
+char	*ft_strndup(const char *s1, size_t n)
 {
-	char	*new;
+	char	*result;
 
-	if (!(new = (char *)malloc(size + 1)))
-		return (NULL);
-	ft_memset(new, '\0', (size + 1));
-	return (new);
+	if ((result = (char *)malloc(n + 1)))
+	{
+		return (ft_strncpy(result, s1, n));
+	}
+	return (NULL);
 }

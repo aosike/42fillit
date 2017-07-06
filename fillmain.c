@@ -1,134 +1,105 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fillmain.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbisi <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/25 20:07:58 by tbisi             #+#    #+#             */
+/*   Updated: 2017/02/07 14:16:33 by agundry          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fillit.h"
 
-int	main(int ac, char **av)
+int		main(int ac, char **av)
 {
-	size_t	mcnt;
-	char	minos[26][17];
-	char	*tmp;
+	char	**minos;
+	char	*result;
+	size_t	w;
+	size_t	*wptr;
 	int		fd;
 
+	w = 0;
+	fd = 0;
+	wptr = &w;
 	if (ac != 2)
-		return (0);
-	if (!(fd = open(av[1], O_RDONLY)))
-		return (0);
-	tmp = ft_strnew(22);
-	mcnt = 0;
-	while (read(fd, tmp, 21))
 	{
-		if (validate(tmp) && incheck(tmp))
-		{
-			tmp = alphabetize(tmp, mcnt);
-			store(minos[mcnt], tmp);
-			mcnt++;
-		}
+		write(1, "usage: ./fillit target_file\n", 27);
+		exit(0);
 	}
-	solve(minos, (mcnt + 1));
+	if ((minos = opensesame(av[1], fd)) == NULL)
+		write(1, "error\n", 6);
+	else
+	{
+		result = solve(minos, wptr);
+		printsolution(result, wptr);
+	}
+	return (0);
 }
 
-/*char	**opensesame(char *file)
+char	**opensesame(char *file, int fd)
 {
-	int		fd;
 	char	*str;
 	char	**inputs;
-	char	**input;
+	size_t	i;
 
-	if(!(fd = open(file, O_RDONLY)))
+	if (!(fd = open(file, O_RDONLY))
+			|| !(inputs = (char **)malloc(sizeof(char *) * 26)))
 		return (NULL);
-	if (!(inputs = (char **)malloc(sizeof(char *) * 26)))
-		return (NULL);
-	ft_bzero(inputs, 26);
-	input = inputs;
-	str = ft_strnew(22);
-	while (read(fd, str, 21))
+	i = 0;
+	while (read(fd, (str = ft_strnew(21)), 20))
 	{
-		if(validate(str) && incheck(str))
-			*input++ = store(str);
+		if (validate(str) && incheck(str))
+			alphabetize(inputs[i++] = store(str));
+		else
+			return (NULL);
+		if (!(read(fd, str, 1)))
+		{
+			while (inputs[i])
+				inputs[i++] = NULL;
+			return ((*inputs) ? inputs : NULL);
+		}
+		else if (*str != '\n')
+			return (NULL);
 	}
-	return (alphabetize(inputs));
-}*/
+	return (NULL);
+}
 
-void	store(char mino[], char *input)
+void	printsolution(char *result, size_t *w)
 {
+	int	spot;
+	int	wi;
+
+	wi = *w;
+	spot = 0;
+	while (result[spot])
+	{
+		write(1, &result[spot], 1);
+		if (spot != 0 && ((spot + 1) % wi) == 0)
+			write(1, "\n", 1);
+		spot++;
+	}
+}
+
+char	*store(char *piece)
+{
+	char	*result;
 	size_t	front;
 	size_t	mid;
 	size_t	back;
 
 	front = 0;
-	back = 20;
-	while (ft_isalpha(*(input + front)))
+	back = 19;
+	while (piece[front] != '#')
 		front++;
 	mid = front + 2;
-	while (!(ft_isalpha(*(input + mid))))
+	while (piece[mid] != '#')
 		mid++;
 	front -= (mid % 5) < (front % 5) ? ((front % 5) - (mid % 5)) : 0;
-	while (!(ft_isalpha(*(input + back))))
+	while (piece[back] != '#')
 		back--;
 	back++;
-	mino = ft_strncpy(mino, (input + front), (back - front));
-}
-
-int	validate(char *piece)
-{
-	size_t	i;
-	size_t	j;
-
-	j = 0;
-	while (*piece && *piece != '\n')
-	{
-		i = 0;
-		while ((*piece == '.' || *piece == '#') && i++ < 5)
-			piece++;
-		if (*piece == '\n' && i == 4)
-		{
-			piece++;
-			j++;
-		}
-		else
-			return (0);
-	}
-	if (*piece == '\n' && j == 4) 
-		return (1);
-	return (0);
-}
-
-
-
-int incheck(char *in)
-{
-	size_t spots = 0;
-	size_t spot = 0;
-	while (in[spot])
-	{
-		if (in[spot] == '#' && inspotcheck(spot, in))
-			spots++;
-		spot++;
-	}
-	if (spots == 4)
-		return (1);
-	else
-		return (0);
-}
-
-int inspotcheck(int spot, char *piece)
-{
-	int	x = 0;
-
-	x += piece[(spot - 5)] == '#' ? 1 : 0;
-	x += piece[(spot - 1)] == '#' ? 1 : 0;
-	x += piece[(spot + 1)] == '#' ? 1 : 0;
-	x += piece[(spot + 5)] == '#' ? 1 : 0;
-	return (x);
-}
-
-char	*alphabetize(char *input, int wcnt)
-{
-	char	*i;
-
-	i = input;
-	while (*input)
-	{
-		*input = *input == '#' ? ('A' + wcnt) : '.';
-		input++;
-	}
-	return (i);
+	result = ft_strndup(&piece[front], (back - front));
+	return (result);
 }

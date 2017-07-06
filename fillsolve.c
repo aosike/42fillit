@@ -1,25 +1,35 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fillsolve.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbisi <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/25 20:03:13 by tbisi             #+#    #+#             */
+/*   Updated: 2017/02/02 15:11:36 by agundry          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fillit.h"
 
-char	*solve(char minos[26][17], size_t mcnt)
+char			*solve(char **minos, size_t *wptr)
 {
 	char	*result;
 	size_t	w;
-	int		swich;
 
-	swich = 0;
-	w = smallsq(mcnt);
+	*wptr = smallsq(minos);
+	w = *wptr;
 	while (!(fillit(minos, w, 0, (result = periods(ft_strnew(w * w), w)))))
 	{
 		w++;
-		swich++;
 		free(result);
+		result = NULL;
 	}
-	if (swich)
-		 printsolution(result, w);
-	return (NULL);
+	*wptr = w;
+	return (result);
 }
 
-char	*periods(char *str, size_t w)
+char			*periods(char *str, size_t w)
 {
 	size_t	i;
 	char	*s;
@@ -31,135 +41,59 @@ char	*periods(char *str, size_t w)
 	return (str);
 }
 
-int	fillit(char minos[26][17], size_t w, size_t spot, char *result)
+int				fillit(char **minos, size_t w, size_t spot, char *result)
 {
-	static size_t	placecount;
-	size_t			num;
 	static size_t	minocount;
-	
-	num = 0;
-	if (!placecount || spot == 0)
+	static size_t	placecount;
+	static size_t	wtmp;
+
+	if (wtmp != w)
+	{
+		wtmp = w;
 		placecount = 0;
-	if (!minocount)
 		minocount = countminos(minos);
+	}
 	if (placecount == minocount)
 		return (1);
-	while (minos[num][0] == '.' || ft_isalpha(minos[num][0]))
+	while (result[spot] && placecount < minocount)
 	{
-		if (uniquemino(minos[num], result))
+		if (placemino(minos[placecount], result, spot, w))
 		{
-			if (placemino(minos[num], result, spot, w))
-			{
-				placecount++;
-				if (fillit(minos, w, (spot + 1), result))
-					return (1);
-			}
-			else
-				deletemino(minos[num], result);
+			placecount++;
+			if (fillit(minos, w, findnextspot(result), result))
+				return (1);
+			deletemino(minos[placecount -= 1], result);
 		}
-		num++;
+		spot++;
 	}
-	if (fillit(minos, w, (spot + 1), result))
-		return (1);
 	return (0);
 }
 
-size_t	findnextspot(char *result)
+int				placemino(char *min, char *result, size_t spot, int w)
 {
-	size_t	siz;
-
-	siz = 0;
-	while (result[siz] && result[siz] != '.')
-		siz++;
-	return (siz);
-}
-
-size_t	countminos(char minos[26][17])
-{
-	size_t	i;
-
-	i = 0;
-	while(*minos[i])
-		i++;
-	return (i);
-}
-
-int	placemino(char *mino, char *result, size_t spot, int w)
-{
-	char *res;
-	char *min;
 	int	i;
 
-	res = result;
-	min = mino;
-	while (*min == '.')
-	{
+	while (*min++ == '.')
 		spot++;
-		min++;
-	}
+	min--;
 	while (*min)
 	{
 		while (*min != '.' && *min)
 		{
-			if (*(min + 1) && (*(min + 1) != '.') && ((spot + 1) % w) == 0)
+			if (result[spot] != '.' || (*(min + 1)
+						&& *(min + 1) != '.' && ((spot + 1) % w) == 0))
+			{
+				deletemino(min, result);
 				return (0);
-			if (res[spot] == '.')
-				res[spot++] = *min++;
-			else
-				return (0);
+			}
+			else if (result[spot] == '.')
+				result[spot++] = *min++;
 		}
 		i = 0;
-		while (*min == '.')
-		{
+		while (*min++ == '.')
 			i++;
-			min++;
-		}
+		min--;
 		spot += w - (5 - i);
 	}
 	return (1);
-}
-
-void	deletemino(char *mino, char *result)
-{
-	char *res;
-	char *min;
-
-	min = mino;
-	res = result;
-	while (*min == '.')
-		min++;
-	while (*res)
-	{
-		*res = *res == *min ? '.' : *res;
-		res++;
-	}
-}
-
-int uniquemino(char mino[], char *result)
-{
-	char	*res;
-	char	*min;
-
-	res = result;
-	min = mino;
-	while (*min == '.')
-		min++;
-	while (*res)
-	{
-		if (*res == *min)
-			return (0);
-		res++;
-	}
-	return (1);
-}
-size_t	smallsq(size_t mcnt)
-{
-	size_t	size;
-	size_t	sq;
-
-	sq = 2;
-	size = (mcnt * 4);
-	while((sq * sq) < size)
-		sq++;
-	return (sq);
 }

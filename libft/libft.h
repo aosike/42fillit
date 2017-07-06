@@ -6,7 +6,7 @@
 /*   By: agundry <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/06 13:47:00 by agundry           #+#    #+#             */
-/*   Updated: 2016/12/18 18:27:56 by agundry          ###   ########.fr       */
+/*   Updated: 2017/02/07 14:24:47 by agundry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ void				*ft_memcpy(void *dst, const void *src, size_t n);
 void				ft_bzero(void *s, size_t n);
 void				*ft_memset(void *b, int c, size_t len);
 char				*ft_strncat(char *s1, const char *s2, size_t n);
+char				*ft_strndup(const char *s1, size_t n);
 
 void				*ft_memalloc(size_t size);
 void				ft_memdel(void **ap);

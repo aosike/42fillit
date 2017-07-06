@@ -6,12 +6,11 @@
 /*   By: agundry <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/29 22:43:53 by agundry           #+#    #+#             */
-/*   Updated: 2017/01/11 15:35:51 by agundry          ###   ########.fr       */
+/*   Updated: 2017/02/01 14:30:25 by agundry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "ft_bzero.c"
 
 void	*ft_memalloc(size_t size)
 {

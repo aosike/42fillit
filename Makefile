@@ -6,36 +6,36 @@
 #    By: agundry <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/10 14:21:55 by agundry           #+#    #+#              #
-#    Updated: 2017/01/15 17:34:40 by agundry          ###   ########.fr        #
+#    Updated: 2017/02/07 14:17:02 by agundry          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME =	fillit
 
-CC =	gcc
+CC = 	gcc
 
-CFLAGS =	-Wall -Wextra -Werror -g
+CFLAGS =	-Wall -Wextra -Werror
 
-SRC =	libft/ft_strnew.c		\
-		libft/ft_memalloc.c 	\
-		libft/ft_strncpy.c		\
-		libft/ft_strlen.c		\
-		libft/ft_isalpha.c		\
-		fillprint.c				\
-		fillmain.c				\
-		fillsolve.c				
+SRC =	fillmain.c				\
+		fillsolve.c				\
+		fillcheck.c				\
+		fillvalid.c				\
 
 OBJ =	$(patsubst %.c,%.o,$(SRC))
 
-$(NAME) :
-	$(CC) $(CFLAGS) -o $(NAME) $(SRC) -I fillit.h
+$(NAME) :	
+			make -C libft/ fclean && make -C libft/
+			$(CC) $(CFLAGS) -c $(SRC) -I libft/ fillit.h
+			$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -L libft/ -lft
 
 all	:	$(NAME)
 
 clean	:
-	rm -f $(OBJ)
+	make -C libft/ fclean
+	/bin/rm -f $(OBJ)
 
 fclean	:	clean
-	rm -f $(NAME)
+	make -C libft/ fclean
+	/bin/rm -f $(NAME)
 
 re	:	fclean all
